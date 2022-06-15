@@ -5,6 +5,7 @@ server.use(express.json());
 server.use("/api", galleryRoute);
 // server.use("api/")
 /*
+
 /api/gallery => git all cards
 
 /api/leader-board => git all scores
