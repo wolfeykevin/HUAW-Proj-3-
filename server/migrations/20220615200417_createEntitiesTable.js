@@ -9,7 +9,6 @@ export function up(knex) {
     table.integer("morale");
     table.integer("attack");
     table.integer("defense");
-    table.integer("speed");
   });
 }
 

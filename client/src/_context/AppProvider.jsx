@@ -1,26 +1,26 @@
 import { createContext } from "react";
-import useGlobalConfig from "./states/useGlobalConfig";
+import useGlobalState from "./states/useGlobalState";
 import useIsLoading from "./states/useIsLoading";
-import useFetchUser from "./effects/useFetchUser";
+import useStartGame from "./effects/useStartGame";
 
 const GlobalContext = createContext();
 
 const AppProvider = ({ children }) => {
-  const { globalConfig, setGlobalConfig } = useGlobalConfig();
+  const { globalState, setGlobalState } = useGlobalState();
   const { isLoading, setIsLoading } = useIsLoading();
-  const { fetchUser } = useFetchUser();
+  const { startGame } = useStartGame();
 
   const store = {
     /* GETTERS */
-    globalConfig,
+    globalState,
     isLoading,
 
     /* SETTERS */
-    setGlobalConfig,
+    setGlobalState,
     setIsLoading,
 
     /* EFFECTS */
-    fetchUser,
+    startGame,
   };
 
   return (

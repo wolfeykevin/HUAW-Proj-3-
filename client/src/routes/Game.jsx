@@ -1,9 +1,6 @@
-import React, { useContext } from "react";
-import { GlobalContext } from "../_context/AppProvider";
+import React from "react";
 
 const Home = () => {
-  const { store } = useContext(GlobalContext);
-
   return <div>insert components here as needed</div>;
 };
 

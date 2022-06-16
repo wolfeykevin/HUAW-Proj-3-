@@ -1,0 +1,35 @@
+.start-screen .row {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 1000px;
+  justify-content: center;
+  padding: 2rem 0 2rem 0;
+}
+
+.career {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+}
+
+.career img {
+  max-width: 200px;
+  height: 200px;
+  width: 164px;
+  padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+  border-radius: var(--global-border-radius);
+  box-shadow: 0 0 8px 0 var(--global-box-shadow-color);
+  margin: 4px;
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+}
+
+.career span {
+  font-size: var(--font-size-subheading);
+  font-family: var(--global-font);
+  text-transform: uppercase;
+  font-weight: 600;
+}

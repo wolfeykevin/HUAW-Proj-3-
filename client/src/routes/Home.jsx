@@ -1,10 +1,8 @@
-import React, { useContext } from "react";
-import { GlobalContext } from "../_context/AppProvider";
+import React from "react";
+import StartScreen from "../_components/StartScreen";
 
 const Home = () => {
-  const { store } = useContext(GlobalContext);
-
-  return <div>HOME PAGE - insert components here as needed</div>;
+  return <StartScreen />;
 };
 
 export default Home;

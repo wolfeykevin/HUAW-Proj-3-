@@ -1,0 +1,30 @@
+.card-gallery-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  width: 100vw;
+  max-height: calc(100% - var(--navbar-height));
+  overflow-y: scroll;
+}
+
+.card-gallery {
+  /* display: grid; */
+  text-align: center;
+  width: 90vw;
+  max-width: 1700px;
+}
+
+.card {
+  max-width: 256px;
+  height: 356px;
+  width: 256px;
+  border-radius: var(--global-border-radius);
+  box-shadow: 0 0 8px 0 var(--global-box-shadow-color);
+  margin: 10px;
+  padding: 8px;
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+}

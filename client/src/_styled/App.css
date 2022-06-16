@@ -1,0 +1,48 @@
+@import url("https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap");
+
+:root {
+  --global-font: sans-serif;
+  --global-border-radius: 16px;
+  --global-box-shadow-color: #91a3b1;
+  --navbar-height: 80px;
+  --font-size-massive: 4rem;
+  --font-size-huge: 3.5rem;
+  --font-size-big: 3rem;
+  --font-size-title: 2.5rem;
+  --font-size-heading: 2rem;
+  --font-size-subheading: 1.5rem;
+  --font-size-body: 1rem;
+  --font-size-tiny: 0.5rem;
+}
+
+html {
+  min-width: 320px;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+body {
+  height: 100vh;
+  min-width: 320px;
+  margin: 0px;
+  display: flex;
+}
+
+#root {
+  width: 100%;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+.fill {
+  height: calc(100vh - var(--navbar-height));
+  width: 100vw;
+}

@@ -7,13 +7,20 @@ export async function seed(knex) {
   await knex("game_stats").del();
   await knex("game_stats").insert([
     {
-      id: 1,
-      player_morale: 50,
-      enemy_morale: 30,
       level: 5,
-      player_id: 111,
-      character_id: 222,
-      enemy_id: 333,
+      player_id: 1,
+      player: JSON.stringify({
+        char_id: 11,
+        morale: 100,
+        attack: 2,
+        defense: 1,
+      }),
+      enemy: JSON.stringify({
+        char_id: 1,
+        morale: 100,
+        attack: 1,
+        defense: 1,
+      }),
     },
   ]);
 }

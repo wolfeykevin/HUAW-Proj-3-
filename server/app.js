@@ -1,37 +1,46 @@
 import express from "express";
-import { galleryRoute } from "./routes/index.js";
+import cors from "cors";
+import { cardRoute, leaderBoardRoute, gameRoute } from "./routes/routes.js";
+import cookieParser from "cookie-parser";
 const server = express();
 server.use(express.json());
-server.use("/api", galleryRoute);
+server.use(cookieParser());
+server.use(cors());
+server.use("/api", cardRoute);
+server.use("/api", leaderBoardRoute);
+server.use("/api", gameRoute);
 // server.use("api/")
 /*
 
-/api/gallery => git all cards
+X /api/gallery => git all cards
 
-/api/leader-board => git all scores
+X /api/leader-board => git all scores
 
-/api/game/new (POST) => start a new game
+X /api/game/new (POST) => start a new game
   req.body: {name: "ENTER NAME", class: "CLASS"}
   POST player
   POST game_stats
   Set Cookie Header with game_stats_ID
 
-/api/game/continue
+X /api/game/continue
   GET game_stats based off cookie header
 
-/api/game/save => saves the game
+X /api/game/save => saves the game
   req.body: {player_morale | enemy_morale | level | player_id | character_id | enemy_id }
   PATCH game_stats
 
 /api/game/battle => starts a new battle
   return {enemy_id}
 
+  REWORKING
 /api/game/end => remove game_stat for cookie & post a new highscore if level is greater then highscore
   return to home page.
 
-/api/game/cards/random?=${n} => git n random cards returned
+X /api/game/cards/random?=${n} => git n random cards returned
 
 /api/game/classes => git playable classes
+
+requestNewBattle will update the game_stats table with random enemy_id and its corresponding enemy_morale
 
 
 SELECT column FROM table
