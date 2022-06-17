@@ -31,5 +31,12 @@
   font-size: var(--font-size-subheading);
   font-family: var(--global-font);
   text-transform: uppercase;
+  text-align: center;
   font-weight: 600;
+  max-width: 200px;
+  width: 164px;
+  padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+  outline: 2px solid black;
+  border-radius: 10px;
+  box-shadow: 0 0 8px 0 var(--global-box-shadow-color);
 }

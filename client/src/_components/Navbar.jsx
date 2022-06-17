@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { Button } from "../_styled/StyledComponentLibrary";
 import "../_styled/Navbar.css";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
+
+  const displayTitle = useRef('Choose Your Career')
 
   return (
     <div className="navbar-container">
@@ -14,36 +17,37 @@ const Navbar = () => {
           src="/assets/af_logo.png"
           alt="air force logo"
         />
-        <div className="title-version">HUAW v0.3.5</div>
+        <div className="title-name">HUAW</div>
+        <div className="title-version">v0.3.5</div>
       </div>
-      <div className="title">HURRY UP AND WAIT</div>
+      <div className="title">{displayTitle.current}</div>
       <div className="button-container">
-        <button
+        <Button
           className="navbar-button"
           onClick={() => {
             console.log("I don't do anything right now, sorry!");
           }}
         >
           Leaderboard
-        </button>
+        </Button>
         {location.pathname === "/cardgallery/*" ? (
-          <button
+          <Button
             className="navbar-button"
             onClick={() => {
               navigate("/");
             }}
           >
             Go Back
-          </button>
+          </Button>
         ) : (
-          <button
+          <Button
             className="navbar-button"
             onClick={() => {
               navigate("/cardgallery/*");
             }}
           >
             Card Gallery
-          </button>
+          </Button>
         )}
       </div>
     </div>

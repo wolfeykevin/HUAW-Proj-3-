@@ -5,7 +5,14 @@ import cookieParser from "cookie-parser";
 const server = express();
 server.use(express.json());
 server.use(cookieParser());
-server.use(cors());
+
+
+var corsOptions = {
+  origin: true,
+  credentials: true,
+}
+
+server.use(cors(corsOptions));
 server.use("/api", cardRoute);
 server.use("/api", leaderBoardRoute);
 server.use("/api", gameRoute);

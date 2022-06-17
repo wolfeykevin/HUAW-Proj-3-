@@ -17,3 +17,32 @@ export const Loader = styled.div`
   height: fit-content;
   width: fit-content;
 `;
+
+export const Button = styled.button`
+  font-size: var(--font-size-body);
+  font-family: var(--global-font);
+  min-height: 50px;
+  min-width: 164px;
+  text-transform: uppercase;
+  text-align: center;
+  font-weight: 600;
+  padding: 1rem 0.5rem 1rem 0.5rem;
+  border-radius: 1rem;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  cursor: pointer;
+  border: none;
+  background-color: #ffffff;
+  color: ${(props) =>
+    props.disabled ? "#a9a9a9" : "#000000"};
+  box-shadow: 0 0 0 1px ${(props) =>
+    props.disabled ? "#a9a9a9" : "#000000"};
+
+  &:hover {
+    background-color: rgb(226, 226, 226);
+  }
+  &:active {
+    background-color: rgb(202, 202, 202);
+    transform: scale(0.99);
+  }
+`;

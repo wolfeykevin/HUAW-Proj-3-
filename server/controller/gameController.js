@@ -27,14 +27,15 @@ const newGame = (req, res) => {
       return knex("player")
         .insert({ name: playerName, highscore: 0 })
         .returning(["id"])
-        .then((newPlayerId) => newPlayerId);
+        .then((newPlayerId) => {
+          return newPlayerId[0].id
+        });
     }
     return data[0].id;
   });
 
   const checkGamePlayerId = getPlayerId.then((data) => {
-    console.log("checkGamePlayerId");
-
+    console.log("checkGamePlayerId initiated with:" + data.id);
     knex("game_stats")
       .select("*")
       .where({ player_id: data })
@@ -61,8 +62,10 @@ const newGame = (req, res) => {
   Promise.all([getPlayerClass, getPlayerId]).then((newGameInstance) => {
     let playerId = newGameInstance[1];
 
+    console.log(newGameInstance)
+
     knex("game_stats")
-      .insert({
+      .insert({ // TODO: Update this format
         level: 0,
         player_id: playerId,
         player: { ...newGameInstance[0][0] },
@@ -70,9 +73,14 @@ const newGame = (req, res) => {
       })
       .returning(["id"])
       .then((newGameId) => {
-        res.cookie("player_game_id", newGameId);
+        var opts = {
+          domain: 'localhost:3000',
+          maxAge: 900000,
+          httpOnly: true
+        }
+        res.status(200).cookie("player_game_id", newGameId, opts);
         //newBattle()
-        res.status(200).json({ message: "test" });
+        res.status(200).json(newGameId[0]);
       });
   });
 };
@@ -91,17 +99,20 @@ enemyEffect(STRING) : (JSON_STRING) {
 
 // TODO - Refactor with New object in mind
 const continueGame = (req, res) => {
-  let storedGameId = req.cookies.player_game_id[0].id;
-
+  let storedGameId = req.cookies.player_game_id;
+  console.log("Continuing game from ID:", storedGameId)
   knex("game_stats")
     .select("*")
     .where({ id: storedGameId })
-    .then((data) => res.status(200).json(data));
+    .then((data) => {
+      console.log(`Data for ${storedGameId}`, data)
+      res.status(200).json(data)
+    });
 };
 
 // TODO - Refactor with New object in mind
 const saveGame = (req, res) => {
-  let storedGameId = req.cookies.player_game_id[0].id;
+  let storedGameId = req.cookies.player_game_id;
 
   knex("game_stats")
     .select("*")

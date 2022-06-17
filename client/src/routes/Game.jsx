@@ -1,7 +1,8 @@
 import React from "react";
+import GameScreen from "../_components/GameScreen";
 
-const Home = () => {
-  return <div>insert components here as needed</div>;
+const Game = () => {
+  return <GameScreen />;
 };
 
-export default Home;
+export default Game;

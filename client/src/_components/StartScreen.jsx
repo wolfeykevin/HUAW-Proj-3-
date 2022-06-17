@@ -1,28 +1,81 @@
-import React, { useContext } from "react";
+import React, { useState, useContext, useRef } from "react";
+import { useNavigate } from "react-router-dom"
 import { GlobalContext } from "../_context/AppProvider";
 import Career from "./Career";
-import { Flex, Loader } from "../_styled/StyledComponentLibrary";
+import { Flex, Loader, Button } from "../_styled/StyledComponentLibrary";
 import "../_styled/StartScreen.css";
+import { parseCookie, getCookie, deleteCookie } from "../_helpers/cookieHelper.js"
+
 
 const StartScreen = () => {
   const { store } = useContext(GlobalContext);
   const { set } = store;
+  const [ game, setGame ] = useState(undefined)
+  let cookies = {
+    player_game_id: undefined
+  }
+
+  try {
+    cookies = parseCookie(document.cookie)
+  } catch {
+    console.log("something went wrong with parsing cookies")
+  }
+
+  console.log(cookies);
+  const playerName = useRef('');
+  const playerClass = useRef('');
+    // { id: 1, name: "Finance", morale: 100, attack: 1, defense: 5 },
+    // { id: 2, name: "SECFO", morale: 100, attack: 1, defense: 5 },
+    // { id: 3, name: "DFAC", morale: 100, attack: 1, defense: 5 },
+    // { id: 4, name: "Intel", morale: 100, attack: 1, defense: 5 },
+    // { id: 5, name: "SpecOps", morale: 100, attack: 1, defense: 5 },
+  const navigate = useNavigate();
+
 
   return (
     <Flex className="start-screen fill" column center>
-      <form onSubmit={set}>
+      <form onSubmit={(e) => {
+        console.log(`Name: ${playerName.current} Class: ${playerClass.current}`)
+            store.startGame(playerName.current,playerClass.current);
+            e.preventDefault()
+            }}>
         <div className="row">
-          <Career name="Finance" src="/assets/AFSC/finance.png" />
-          <Career name="Secfo" src="/assets/AFSC/secfo.png" />
-          <Career name="DFAC Chef" src="/assets/AFSC/dfac_chef.png" />
-          <Career name="Intel" src="/assets/AFSC/intel.png" />
-          <Career name="Spec Ops" src="/assets/AFSC/spec_ops.png" />
+          <Career name="Finance" src="/assets/AFSC/finance.png" clickHandler={() => {playerClass.current = "Finance"; console.log(playerClass.current)}}/>
+          <Career name="Secfo" src="/assets/AFSC/secfo.png" clickHandler={() => {playerClass.current = "SECFO"; console.log(playerClass.current)}}/>
+          <Career name="DFAC Chef" src="/assets/AFSC/dfac_chef.png" clickHandler={() => {playerClass.current = "DFAC"; console.log(playerClass.current)}}/>
+          <Career name="Intel" src="/assets/AFSC/intel.png" clickHandler={() => {playerClass.current = "Intel"; console.log(playerClass.current)}}/>
+          <Career name="Spec Ops" src="/assets/AFSC/spec_ops.png" clickHandler={() => {playerClass.current = "SpecOps"; console.log(playerClass.current)}}/>
         </div>
-        <div className="row">input form</div>
-        <div className="row">start button</div>
-        <div className="row">resume game button</div>
+        <div className="row"><input onChange={(e) => {playerName.current = e.target.value}} placeholder="Name" />
+        </div>
+        <div className="row">
+          <Button>
+              Start Button
+          </Button>
+          </div>
       </form>
+      <div className="row">
+        {cookies.player_game_id !== undefined ?
+          <Button className={"resume-button"} onClick={async () => {
+            let gameData = await store.resumeGame()
+            // store data in context
+            store.setGameData(gameData)
+            // navigate to new page
+            navigate("/game/*")
+          }}>
+              Resume Game
+          </Button> :
+          <Button className={"resume-button"} disabled>
+              Resume Game
+          </Button>
+        }
+      </div>
+      <Button onClick={() => {
+        deleteCookie('player_game_id')
+        window.location.reload()
+        }}>Debug</Button>
     </Flex>
+
   );
 };
 
