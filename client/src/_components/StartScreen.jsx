@@ -52,7 +52,8 @@ const StartScreen = () => {
           <Career name="Intel" src="/assets/AFSC/Intel.png" clickHandler={() => {playerClass.current = "Intel"; console.log(playerClass.current)}}/>
           <Career name="Spec Ops" src="/assets/AFSC/SpecOps.png" clickHandler={() => {playerClass.current = "SpecOps"; console.log(playerClass.current)}}/>
         </div>
-        <div className="row"><input onChange={(e) => {playerName.current = e.target.value}} placeholder="Name" />
+        <div className="row">
+          <input className="name-input" onChange={(e) => {playerName.current = e.target.value}} placeholder="Name" />
         </div>
         <div className="row">
           <Button>

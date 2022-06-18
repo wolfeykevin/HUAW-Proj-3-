@@ -22,14 +22,27 @@ const Navbar = () => {
       </div>
       <div className="title">{displayTitle.current}</div>
       <div className="button-container">
-        <Button
-          className="navbar-button"
-          onClick={() => {
-            console.log("I don't do anything right now, sorry!");
-          }}
-        >
-          Leaderboard
-        </Button>
+        {location.pathname === "/" ?
+          <>
+          <Button
+            className="navbar-button"
+            onClick={() => {
+              console.log("I don't do anything right now, sorry!");
+            }}
+          >
+            Leaderboard
+          </Button>
+          <Button
+            className="navbar-button"
+            onClick={() => {
+              navigate("/cardgallery/*");
+            }}
+          >
+            Card Gallery
+          </Button>
+          </>: <></>
+
+        }
         {location.pathname === "/cardgallery/*" ? (
           <Button
             className="navbar-button"
@@ -39,16 +52,7 @@ const Navbar = () => {
           >
             Go Back
           </Button>
-        ) : (
-          <Button
-            className="navbar-button"
-            onClick={() => {
-              navigate("/cardgallery/*");
-            }}
-          >
-            Card Gallery
-          </Button>
-        )}
+        ) : <></>}
       </div>
     </div>
   );

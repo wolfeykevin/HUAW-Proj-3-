@@ -53,25 +53,29 @@
 .save-data-container{
   position: absolute;
   font-family: var(--global-font);
-  font-weight: 500;
   left: 0px;
   bottom: 0px;
   margin: 10px;
-  padding: 10px 10px 10px 25px;
   color: black;
-  border: 1px solid black;
-  border-radius: 10px;
+  border: 2px solid black;
+  border-radius: 11px;
   box-shadow: 0 0 8px 0 var(--global-box-shadow-color);
 }
 
 .save-title{
   text-align: center;
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 1.25rem;
+  outline: 1px solid black;
+  border-radius: 10px 10px 0px 0px;
+  padding: 10px 0px 10px 0px;
 }
 
 .save-data{
   display: flex;
   align-items: center;
+  font-weight: 500;
+  padding: 10px 10px 10px 25px;
 }
 
 .save-image{
