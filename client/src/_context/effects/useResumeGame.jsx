@@ -15,7 +15,7 @@ const useResumeGame = () => {
       .then((res) => res.json())
       .then((data) => {
         console.log("This should be game data:", data);
-        return data;
+        return data[0];
       })
       .catch((err) => {
         console.log(err + "\nOops! Resuming game failed.")

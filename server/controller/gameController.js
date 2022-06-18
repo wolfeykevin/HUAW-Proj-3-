@@ -69,7 +69,7 @@ const newGame = (req, res) => {
         level: 0,
         player_id: playerId,
         player: { ...newGameInstance[0][0] },
-        enemy: {},
+        enemy: { ...newGameInstance[0][0] },
       })
       .returning(["id"])
       .then((newGameId) => {
@@ -101,9 +101,10 @@ enemyEffect(STRING) : (JSON_STRING) {
 const continueGame = (req, res) => {
   let storedGameId = req.cookies.player_game_id;
   console.log("Continuing game from ID:", storedGameId)
-  knex("game_stats")
-    .select("*")
-    .where({ id: storedGameId })
+  knex("game_stats as g")
+    .select("g.*","player.name as player_name")
+    .where('g.id', storedGameId)
+    .join('player', 'g.player_id', 'player.id')
     .then((data) => {
       console.log(`Data for ${storedGameId}`, data)
       res.status(200).json(data)

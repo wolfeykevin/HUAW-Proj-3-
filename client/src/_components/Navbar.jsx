@@ -18,7 +18,7 @@ const Navbar = () => {
           alt="air force logo"
         />
         <div className="title-name">HUAW</div>
-        <div className="title-version">v0.3.5</div>
+        <div className="title-version">v0.5.1</div>
       </div>
       <div className="title">{displayTitle.current}</div>
       <div className="button-container">

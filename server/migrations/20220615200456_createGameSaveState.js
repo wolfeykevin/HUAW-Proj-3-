@@ -9,6 +9,7 @@ export function up(knex) {
     // table.integer("enemy_morale");
     table.integer("level");
     table.integer("player_id");
+    table.foreign('player_id').references('player.id');
     table.json("player");
     table.json("enemy");
     // table.integer("player_id");
