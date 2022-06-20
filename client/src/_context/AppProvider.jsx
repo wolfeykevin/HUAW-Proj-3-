@@ -21,7 +21,6 @@ const AppProvider = ({ children }) => {
     isLoading,
     gameData,
 
-
     /* SETTERS */
     setGlobalState,
     setIsLoading,

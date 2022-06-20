@@ -1,12 +1,13 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom"
 import { GlobalContext } from "../_context/AppProvider";
+import { GameContext } from "../_context/GameProvider";
 import { Flex, Loader, Button } from "../_styled/StyledComponentLibrary";
 import { parseCookie, getCookie, deleteCookie } from "../_helpers/cookieHelper.js"
 import "../_styled/GameScreen.css"
+// import { Button } from "../_styled/StyledComponentLibrary";
 import Entity from "../_helpers/Entity.js"
 
-let enemyCard = [];
 
 const getCards = async (amount) => {
   if (amount === undefined || amount > 5) {
@@ -19,45 +20,62 @@ const getCards = async (amount) => {
   return data;
 }
 
-const applyEffects = (effects, target) => {
-  console.log(effects)
-  for (let index in effects.effect) {
-    let effect = effects.effect[index];
-    let value = effects.value[index];
 
-    console.log('Effect:', effect)
-    console.log('Value:', value)
 
-    // only use morale right now
-    if (effect === "morale") {
-      if (typeof value === 'number') {
-        target[effect] += value;
-      }
-    }
-  }
-}
+
+
+let enemyCard = [];
 
 const GameScreen = () => {
-  const { store } = useContext(GlobalContext);
-  let gameData = store.gameData;
-  const [ gameState, setGameState ] = useState('initializing');
-  const [ cardData, setCardData ] = useState([]);
-  const [ log, setLog ] = useState([]);
-  const prevGameState = useRef();
   const navigate = useNavigate();
+  const { store } = useContext(GlobalContext);
+  const { game } = useContext(GameContext);
 
-  const logMessage = (message) => {
-    setLog([message, ...log])
+
+  //TO-DO: refactor to remove these lines
+  let gameData = game.gameData;
+  let gameState = game.gameState;
+  let setGameState = game.setGameState;
+  let playerHand = game.playerHand;
+  let setPlayerHand = game.setPlayerHand;
+  let log = game.gameLog;
+  let setGameLog = game.setGameLog;
+  let prevGameState = game.prevGameState;
+  let logMessage = game.logMessage;
+
+  const checkMorale = () => {
+    if (gameData.player.current.morale <= 0) {
+      return "you lose"
+    }
+    if (gameData.enemy.current.morale <= 0) {
+      return "you win"
+    }
+  }
+
+  const applyEffects = (effects, target) => {
+    for (let index in effects.effect) {
+      let effect = effects.effect[index];
+      let value = effects.value[index];
+
+      target.applyEffect(effect, value);
+
+    }
+
+
   }
 
   const clickHandler = (element) => {
     if (gameState === 'player turn') {
+      // parse data from HTML element
       let data = JSON.parse(element.dataset.card)
 
-      let index = cardData.findIndex(card => card.name === data.name)
+      // get index of the selected card
+      let index = playerHand.findIndex(card => card.name === data.name)
 
-      cardData.splice(index, 1);
+      // remove card from player hand
+      playerHand.splice(index, 1);
 
+      // pass the selected card to gameHandler
       gameHandler(data)
     }
   }
@@ -65,18 +83,27 @@ const GameScreen = () => {
   const gameHandler = async (card) => {
     console.log(gameState);
 
-    if (gameState === 'initializing') {
-      getCards(3-cardData.length).then(data => setCardData([...cardData,...data]))
+    if (gameState === 'loading') {
+      game.setGameData(store.gameData)
+      setGameState('initializing')
+    }
 
-      logMessage('player turn')
-      setGameState('player turn')
+    if (gameState === 'initializing') {
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      //initialize entities
+      gameData.player = new Entity(gameData.player);
+      gameData.enemy = new Entity(gameData.enemy);
+      gameData.level += 1
       enemyCard = [];
+
+      setGameState('player draw')
     }
 
     if (gameState === 'player draw') {
-      getCards(3-cardData.length).then(data => setCardData([...cardData,...data]))
 
-      await logMessage(`drew ${3-cardData.length} card(s)`)
+      getCards(3-playerHand.length).then(data => setPlayerHand([...playerHand,...data]))
+
+      logMessage(['player turn', `drew ${3-playerHand.length} card(s)`])
 
       setGameState('player turn')
     }
@@ -92,10 +119,11 @@ const GameScreen = () => {
       console.log('Enemy Effects:')
       applyEffects(card.enemy_effect, gameData.enemy)
 
-      // await new Promise(resolve => setTimeout(resolve, 1000))
-
-
-      setGameState('enemy draw')
+      if (checkMorale() !== undefined) {
+        setGameState(checkMorale())
+      } else {
+        setGameState('enemy draw')
+      }
     }
 
     if (gameState === 'enemy draw') {
@@ -124,10 +152,20 @@ const GameScreen = () => {
       await new Promise(resolve => setTimeout(resolve, 1500))
       enemyCard = [];
 
-      // logMessage('player turn')
-      setGameState('player draw')
+      if (checkMorale() !== undefined) {
+        setGameState(checkMorale())
+      } else {
+        setGameState('player draw')
+      }
     }
 
+    if (gameState === 'you lose') {
+      // do nothing
+    }
+
+    if (gameState === 'you win') {
+      //
+    }
   }
 
 
@@ -161,22 +199,34 @@ const GameScreen = () => {
               <div className="player-container">
                 <div>{gameData.player_name}</div>
                 <img className="entity-image" src={`/assets/AFSC/${gameData.player.name}.png`}/>
-                <div className="morale-bar">
-                  <div className="current-morale" style={{width:(gameData.player.morale)+"%"}}>{gameData.player.morale}</div>
-                </div>
+
+                  {gameData.player.current === undefined ? <></> :
+                  <div className="morale-bar">
+                    <div
+                      className="current-morale"
+                      style={{width:((gameData.player.current.morale/gameData.player.max.morale)*100)+"%"}}>
+                        {gameData.player.current.morale + " / " + gameData.player.max.morale}
+                    </div>
+                  </div>
+                  }
+
               </div>
               <div className="enemy-container">
-                <div>{gameData.enemy.name}</div>
+                <div>{gameData.enemy.name + " Guy"}</div>
                 <img className="entity-image" src={`/assets/AFSC/${store.gameData.enemy.name}.png`}/>
-                <div className="morale-bar">
-                  <div className="current-morale" style={{width:(gameData.enemy.morale)+"%"}}>
-                    {gameData.enemy.morale}
+                {gameData.enemy.current === undefined ? <></> :
+                  <div className="morale-bar">
+                    <div
+                      className="current-morale"
+                      style={{width:((gameData.enemy.current.morale/gameData.enemy.max.morale)*100)+"%"}}>
+                        {gameData.enemy.current.morale + " / " + gameData.enemy.max.morale}
+                    </div>
                   </div>
-                </div>
+                  }
               </div>
             </div>
             <div className="player-cards-container">
-              {cardData.map(card =>
+              {playerHand.map(card =>
                 <img
                   className="player-card"
                   key={card.id}
@@ -201,6 +251,20 @@ const GameScreen = () => {
 
         </>
       }
+      {gameState === 'you lose' ?
+        <div className='end-screen'>
+          You Lost...
+          <Button className="end-screen-button" onClick={() => navigate("/")}>Go Home</Button>
+        </div> : <></>}
+      {(gameState === 'you win' || gameState == 'save complete') ?
+        <div className='end-screen'>
+          You Won!
+          {gameState === 'you win' ?
+            <Button disabled>Saving...</Button>
+            :
+            <Button onClick={() => navigate("/game/*")}>Next Battle</Button>
+          }
+        </div>:<></>}
     </>
   )
 };
