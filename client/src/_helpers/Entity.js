@@ -1,6 +1,9 @@
 class Entity {
   constructor(entityData) {
     this.currentMorale = 100;
+
+    //TO-DO: flesh this out
+
     this.maxMorale = 100;
     this.baseAttack = 10;
     this.baseDefense = 10;
