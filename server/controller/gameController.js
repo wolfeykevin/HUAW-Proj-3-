@@ -100,7 +100,7 @@ enemyEffect(STRING) : (JSON_STRING) {
 // TODO - Refactor with New object in mind
 const continueGame = (req, res) => {
   let storedGameId = req.cookies.player_game_id;
-  console.log("Continuing game from ID:", storedGameId)
+  // console.log("Continuing game from ID:", storedGameId)
   knex("game_stats as g")
     .select("g.*","player.name as player_name")
     .where('g.id', storedGameId)
@@ -113,18 +113,37 @@ const continueGame = (req, res) => {
 
 // TODO - Refactor with New object in mind
 const saveGame = (req, res) => {
-  let storedGameId = req.cookies.player_game_id;
+  // let storedGameId = req.cookies.player_game_id;
+  let gameData = req.body;
+  let storedGameId = gameData.id;
+  delete gameData.id
+  delete gameData.player_name
+  // console.log('Recieved request from game ID:', storedGameId)
+  // console.log('Data received:', gameData)
 
-  knex("game_stats")
+
+
+  knex("entities")
     .select("*")
-    .where({ id: storedGameId })
-    .update(req.body)
-    .returning("*")
-    .then((data) =>
-      res
-        .status(200)
-        .json({ message: `game saved for player ${data[0].player.id}` })
-    );
+    .orderByRaw("RANDOM ()")
+    .limit(1)
+    .then((data) => {
+      console.log('Next enemy:')
+      console.log(data)
+      gameData.enemy = data[0];
+    })
+    .then(console.log(gameData))
+    .then(() =>
+      knex("game_stats")
+      .select("*")
+      .where({ id: storedGameId })
+      .update(gameData)
+      .returning("*")
+      .then((data) =>
+        res.status(200).json({
+          message: "success",
+        }))
+    )
 };
 
 const deleteGame = (req, res) => {

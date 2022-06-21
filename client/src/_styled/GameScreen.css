@@ -142,6 +142,12 @@
   background-color: rgb(200,200,200,0.6);
 }
 
+.debug-win{
+  position: absolute;
+  bottom: 0%;
+  right: 0%;
+}
+
 @keyframes focus {
   0%   { transform: scale(1.00) }
   100% { transform: scale(1.50) }

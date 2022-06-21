@@ -43,6 +43,10 @@ const GameScreen = () => {
   let prevGameState = game.prevGameState;
   let logMessage = game.logMessage;
 
+  const debugWin = () => {
+    setGameState('you win')
+  }
+
   const checkMorale = () => {
     if (gameData.player.current.morale <= 0) {
       return "you lose"
@@ -58,10 +62,7 @@ const GameScreen = () => {
       let value = effects.value[index];
 
       target.applyEffect(effect, value);
-
     }
-
-
   }
 
   const clickHandler = (element) => {
@@ -96,20 +97,29 @@ const GameScreen = () => {
       gameData.level += 1
       enemyCard = [];
 
+      gameData.player.turns += 1;
       setGameState('player draw')
     }
 
     if (gameState === 'player draw') {
+      if (gameData.player.turns > 0) {
+        // consume turn
+        gameData.player.turns -= 1;
+        await new Promise(resolve => setTimeout(resolve, 1000))
 
-      getCards(3-playerHand.length).then(data => setPlayerHand([...playerHand,...data]))
+        getCards(3-playerHand.length).then(data => setPlayerHand([...playerHand,...data]))
 
-      logMessage(['player turn', `drew ${3-playerHand.length} card(s)`])
+        logMessage(['player turn', `drew ${3-playerHand.length} card(s)`])
 
-      setGameState('player turn')
+        setGameState('player turn')
+      } else {
+        gameData.enemy.turns += 1;
+        setGameState('enemy draw')
+      }
+
     }
 
     if (gameState === 'player turn' && card !== undefined) {
-
       logMessage(`you used: ${card.name}`)
       // apply user effects
       console.log('User Effects:')
@@ -122,22 +132,32 @@ const GameScreen = () => {
       if (checkMorale() !== undefined) {
         setGameState(checkMorale())
       } else {
-        setGameState('enemy draw')
+        if (gameData.player.turns <= 0) {
+          setGameState('player draw')
+        } else {
+          setGameState('enemy draw')
+        }
       }
     }
 
     if (gameState === 'enemy draw') {
+      if (gameData.enemy.turns > 0) {
+        // consume turn
+        gameData.enemy.turns -= 1;
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        logMessage('enemy turn')
 
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      logMessage('enemy turn')
+        // draw a card
+        enemyCard = await getCards(1)
 
-      // draw a card
-      enemyCard = await getCards(1)
-
-      console.log('Enemy drew a card:', enemyCard[0].name)
+        console.log('Enemy drew a card:', enemyCard[0].name)
 
 
-      setGameState('enemy turn')
+        setGameState('enemy turn')
+      } else {
+        gameData.player.turns += 1;
+        setGameState('player draw')
+      }
     }
 
     if (gameState === 'enemy turn') {
@@ -155,6 +175,7 @@ const GameScreen = () => {
       if (checkMorale() !== undefined) {
         setGameState(checkMorale())
       } else {
+        gameData.player.turns += 1;
         setGameState('player draw')
       }
     }
@@ -165,6 +186,22 @@ const GameScreen = () => {
 
     if (gameState === 'you win') {
       //
+      fetch("http://localhost:8080/api/game/", {
+        method: 'PATCH',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(gameData)
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.message === 'success') {
+          store.resumeGame()
+          setGameState('save complete')
+        }
+      })
     }
   }
 
@@ -251,6 +288,7 @@ const GameScreen = () => {
 
         </>
       }
+      <button className="debug-win" onClick={() => {debugWin()}}>JUST WIN</button>
       {gameState === 'you lose' ?
         <div className='end-screen'>
           You Lost...
@@ -262,7 +300,9 @@ const GameScreen = () => {
           {gameState === 'you win' ?
             <Button disabled>Saving...</Button>
             :
-            <Button onClick={() => navigate("/game/*")}>Next Battle</Button>
+            <Button onClick={() => {
+              navigate('/')
+            }}>Go Home</Button>
           }
         </div>:<></>}
     </>
