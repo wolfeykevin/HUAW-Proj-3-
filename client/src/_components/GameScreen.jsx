@@ -86,6 +86,7 @@ const GameScreen = () => {
 
     if (gameState === 'loading') {
       game.setGameData(store.gameData)
+      await new Promise(resolve => setTimeout(resolve, 1000))
       setGameState('initializing')
     }
 
@@ -129,12 +130,15 @@ const GameScreen = () => {
       console.log('Enemy Effects:')
       applyEffects(card.enemy_effect, gameData.enemy)
 
+      await new Promise(resolve => setTimeout(resolve, 1000))
+
       if (checkMorale() !== undefined) {
         setGameState(checkMorale())
       } else {
-        if (gameData.player.turns <= 0) {
+        if (gameData.player.turns > 0) {
           setGameState('player draw')
         } else {
+          gameData.enemy.turns += 1;
           setGameState('enemy draw')
         }
       }
@@ -175,8 +179,12 @@ const GameScreen = () => {
       if (checkMorale() !== undefined) {
         setGameState(checkMorale())
       } else {
-        gameData.player.turns += 1;
-        setGameState('player draw')
+        if (gameData.enemy.turns > 0) {
+          setGameState('enemy draw')
+        } else {
+          gameData.player.turns += 1;
+          setGameState('player draw')
+        }
       }
     }
 
@@ -198,7 +206,7 @@ const GameScreen = () => {
       .then(res => res.json())
       .then(data => {
         if (data.message === 'success') {
-          store.resumeGame()
+          store.resumeGame().then(data => store.setGameData(data))
           setGameState('save complete')
         }
       })
@@ -229,44 +237,79 @@ const GameScreen = () => {
             {Object.keys(gameData).map(key => {
               return <div className="debug-entry">{key + ": " + JSON.stringify(gameData[key])}</div>
             })}
+            <button className="debug-win" onClick={() => {debugWin()}}>JUST WIN</button>
           </div>
 
+          {gameData.enemy.current === undefined ? <></>:
           <div className="game-container">
             <div className="entity-container">
               <div className="player-container">
-                <div>{gameData.player_name}</div>
+                <span className="entity-name">{gameData.player_name}</span>
                 <img className="entity-image" src={`/assets/AFSC/${gameData.player.name}.png`}/>
 
                   {gameData.player.current === undefined ? <></> :
-                  <div className="morale-bar">
-                    <div
-                      className="current-morale"
-                      style={{width:((gameData.player.current.morale/gameData.player.max.morale)*100)+"%"}}>
-                        {gameData.player.current.morale + " / " + gameData.player.max.morale}
+                  <>
+                    <div className="morale-bar">
+                      <div
+                        className="current-morale"
+                        style={{width:((gameData.player.current.morale/gameData.player.max.morale)*100)+"%"}}>
+
+                      </div>
+                      <span className="morale-value">{gameData.player.current.morale + " / " + gameData.player.max.morale}</span>
                     </div>
-                  </div>
+                    <div className="stat-container">
+                      <div className="stat">
+                        <img className="stat-image" src="/assets/stats/attack.png"/>
+                        <span className="stat-value">{gameData.player.current.attack}</span>
+                      </div>
+                      <div className="stat">
+                        <img className="stat-image" src="/assets/stats/defense.png"/>
+                        <span className="stat-value">{gameData.player.current.defense}</span>
+                      </div>
+                      <div className="stat">
+                        <img className="stat-image" src="/assets/stats/agility.png"/>
+                        <span className="stat-value">{gameData.player.turns}</span>
+                      </div>
+                    </div>
+                  </>
                   }
 
               </div>
               <div className="enemy-container">
-                <div>{gameData.enemy.name + " Guy"}</div>
+              <span className="entity-name">{gameData.enemy.name + " Guy"}</span>
                 <img className="entity-image" src={`/assets/AFSC/${store.gameData.enemy.name}.png`}/>
                 {gameData.enemy.current === undefined ? <></> :
+                <>
                   <div className="morale-bar">
                     <div
                       className="current-morale"
                       style={{width:((gameData.enemy.current.morale/gameData.enemy.max.morale)*100)+"%"}}>
-                        {gameData.enemy.current.morale + " / " + gameData.enemy.max.morale}
                     </div>
+                    <span className="morale-value">{gameData.enemy.current.morale + " / " + gameData.enemy.max.morale}</span>
                   </div>
-                  }
+                  <div className="stat-container">
+                      <div className="stat">
+                        <img className="stat-image" src="/assets/stats/attack.png"/>
+                        <span className="stat-value">{gameData.enemy.current.attack}</span>
+                      </div>
+                      <div className="stat">
+                        <img className="stat-image" src="/assets/stats/defense.png"/>
+                        <span className="stat-value">{gameData.enemy.current.defense}</span>
+                      </div>
+                      <div className="stat">
+                        <img className="stat-image" src="/assets/stats/agility.png"/>
+                        <span className="stat-value">{gameData.enemy.turns}</span>
+                      </div>
+                    </div>
+                </>
+                }
               </div>
             </div>
             <div className="player-cards-container">
-              {playerHand.map(card =>
+              {playerHand.map((card,index) =>
                 <img
                   className="player-card"
-                  key={card.id}
+                  key={card.id+"-"+index}
                   name={card.name}
                   data-card={JSON.stringify(card)}
                   src={`/assets/cards/${card.name}.png`}
@@ -285,10 +328,11 @@ const GameScreen = () => {
               {log.map(entry => <span className="log-entry">{entry}</span>)}
             </div>
           </div>
+          }
 
         </>
       }
-      <button className="debug-win" onClick={() => {debugWin()}}>JUST WIN</button>
+
       {gameState === 'you lose' ?
         <div className='end-screen'>
           You Lost...
@@ -300,9 +344,15 @@ const GameScreen = () => {
           {gameState === 'you win' ?
             <Button disabled>Saving...</Button>
             :
+            <>
+            <Button onClick={() => {
+              setGameState('loading')
+              // navigate('/')
+            }}>Fight Some More</Button>
             <Button onClick={() => {
               navigate('/')
             }}>Go Home</Button>
+            </>
           }
         </div>:<></>}
     </>

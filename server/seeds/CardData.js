@@ -30,7 +30,7 @@ export async function seed(knex) {
       }),
       enemy_effect: JSON.stringify({
         effect: ["turns"],
-        value: [-2],
+        value: [-1],
       }),
       temp_effect: "false",
     },
@@ -87,7 +87,7 @@ export async function seed(knex) {
       }),
       enemy_effect: JSON.stringify({
         effect: ["turns"],
-        value: [-2],
+        value: [-1],
       }),
       temp_effect: "false",
     },
@@ -199,7 +199,7 @@ export async function seed(knex) {
       }),
       enemy_effect: JSON.stringify({
         effect: ["turns"],
-        value: [-2],
+        value: [-1],
       }),
       temp_effect: "false",
     },
@@ -306,12 +306,12 @@ export async function seed(knex) {
       description: '""',
       background_img: "",
       user_effect: JSON.stringify({
-        effect: ["turns"],
-        value: [2],
-      }),
-      enemy_effect: JSON.stringify({
         effect: [],
         value: [],
+      }),
+      enemy_effect: JSON.stringify({
+        effect: ["turns"],
+        value: [-2],
       }),
       temp_effect: "false",
     },
@@ -563,7 +563,7 @@ export async function seed(knex) {
       }),
       enemy_effect: JSON.stringify({
         effect: ["turns"],
-        value: [-2],
+        value: [-1],
       }),
       temp_effect: "false",
     },
@@ -587,7 +587,7 @@ export async function seed(knex) {
       background_img: "",
       user_effect: JSON.stringify({
         effect: ["turns"],
-        value: [-2],
+        value: [-1],
       }),
       enemy_effect: JSON.stringify({
         effect: [],
