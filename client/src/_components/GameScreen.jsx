@@ -25,6 +25,7 @@ const getCards = async (amount) => {
 
 
 let enemyCard = [];
+let playerCard = [];
 
 const GameScreen = () => {
   const navigate = useNavigate();
@@ -91,24 +92,27 @@ const GameScreen = () => {
     }
 
     if (gameState === 'initializing') {
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      //initialize entities
       gameData.player = new Entity(gameData.player);
       gameData.enemy = new Entity(gameData.enemy);
       gameData.level += 1
+      setPlayerHand([]);
       enemyCard = [];
-
+      playerCard = [];
       gameData.player.turns += 1;
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      //initialize entities
+
       setGameState('player draw')
     }
 
     if (gameState === 'player draw') {
+      playerCard = [];
       if (gameData.player.turns > 0) {
         // consume turn
         gameData.player.turns -= 1;
         await new Promise(resolve => setTimeout(resolve, 1000))
 
-        getCards(3-playerHand.length).then(data => setPlayerHand([...playerHand,...data]))
+        getCards(5-playerHand.length).then(data => setPlayerHand([...playerHand,...data]))
 
         logMessage(['player turn', `drew ${3-playerHand.length} card(s)`])
 
@@ -122,6 +126,7 @@ const GameScreen = () => {
 
     if (gameState === 'player turn' && card !== undefined) {
       logMessage(`you used: ${card.name}`)
+      playerCard = [card]
       // apply user effects
       console.log('User Effects:')
       applyEffects(card.user_effect, gameData.player)
@@ -145,6 +150,7 @@ const GameScreen = () => {
     }
 
     if (gameState === 'enemy draw') {
+      playerCard = [];
       if (gameData.enemy.turns > 0) {
         // consume turn
         gameData.enemy.turns -= 1;
@@ -308,7 +314,7 @@ const GameScreen = () => {
             <div className="player-cards-container">
               {playerHand.map((card,index) =>
                 <img
-                  className="player-card"
+                  className={`player-card`}
                   key={card.id+"-"+index}
                   name={card.name}
                   data-card={JSON.stringify(card)}
@@ -316,6 +322,12 @@ const GameScreen = () => {
                   alt={card.name}
                   onClick={(e) => clickHandler(e.target)}
                 />
+              )}
+            </div>
+            <div className="player-card-container">
+              {playerCard.map(card => {
+                return <img className="p-card" src={`/assets/cards/${card.name}.png`}/>
+              }
               )}
             </div>
             <div className="enemy-card-container">
@@ -345,13 +357,17 @@ const GameScreen = () => {
             <Button disabled>Saving...</Button>
             :
             <>
-            <Button onClick={() => {
-              setGameState('loading')
-              // navigate('/')
-            }}>Fight Some More</Button>
-            <Button onClick={() => {
-              navigate('/')
-            }}>Go Home</Button>
+            <div>
+              <Button onClick={() => {
+                setGameState('loading')
+                // navigate('/')
+              }}>Fight Some More</Button>
+            </div>
+            <div>
+              <Button onClick={() => {
+                navigate('/')
+              }}>Go Home</Button>
+            </div>
             </>
           }
         </div>:<></>}

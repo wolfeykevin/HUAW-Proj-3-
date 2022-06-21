@@ -38,11 +38,12 @@ const StartScreen = () => {
 
   return (
     <Flex className="start-screen fill" column center>
-      <form onSubmit={(e) => {
+      <form onSubmit={async (e) => {
         e.preventDefault()
         if (playerName.current !== '' && playerClass.curent !== '') {
           console.log(`Name: ${playerName.current} Class: ${playerClass.current}`)
-          store.startGame(playerName.current,playerClass.current);
+          await store.startGame(playerName.current,playerClass.current)
+          window.location.reload()
         }
       }}>
         <div className="row">

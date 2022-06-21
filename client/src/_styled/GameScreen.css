@@ -139,24 +139,35 @@
   animation-fill-mode: forwards;
 }
 
-.enemy-card-container{
+.enemy-card-container, .player-card-container{
   position: absolute;
   transform: translateX(-50%);
-  top: 20%;
+  top: 10%;
   left: 50%
 }
 
-.enemy-card{
+.enemy-card, .p-card{
   position: relative;
   border: 10%;
-  min-width: 192px;
-  max-width: 192px;
-  min-height: 267px;
-  max-height: 267px;
+  min-width: 256px;
+  max-width: 256px;
+  min-height: 356px;
+  max-height: 356px;
   padding: 8px;
   box-shadow: var(--global-box-shadow-color);
-  animation-name: moveIn;
+
+}
+
+.enemy-card{
+  animation-name: moveInLeft;
   animation-duration: 0.3s;
+  animation-fill-mode: forwards;
+  z-index: -1;
+}
+
+.p-card{
+  animation-name: moveInRight;
+  animation-duration: 0.2s;
   animation-fill-mode: forwards;
   z-index: -1;
 }
@@ -209,7 +220,12 @@
   100% { transform: scale(1.00) }
 }
 
-@keyframes moveIn {
+@keyframes moveInLeft {
   0%   { margin-right: -100% }
   100% { margin-right: 50% }
+}
+
+@keyframes moveInRight {
+  0%   { margin-left: -100% }
+  100% { margin-left: 0% }
 }
