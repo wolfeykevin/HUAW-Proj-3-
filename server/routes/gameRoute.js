@@ -19,3 +19,4 @@ router.route("/game").delete(deleteGame);
 // /api/game cookie needed => deletes the players game using the players stored game id
 
 export default router;
+

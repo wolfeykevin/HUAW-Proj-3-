@@ -1,5 +1,6 @@
-import React, { useRef } from "react";
+import React, { useRef, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { GlobalContext } from "../_context/AppProvider";
 import { Button } from "../_styled/StyledComponentLibrary";
 import "../_styled/Navbar.css";
 
@@ -7,7 +8,8 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const displayTitle = useRef('Choose Your Career')
+  const { store } = useContext(GlobalContext);
+  let title = store.displayTitle.current
 
   return (
     <div className="navbar-container">
@@ -20,14 +22,15 @@ const Navbar = () => {
         <div className="title-name">HUAW</div>
         <div className="title-version">v0.5.1</div>
       </div>
-      <div className="title">{displayTitle.current}</div>
+      <div className="title">{title}</div>
       <div className="button-container">
         {location.pathname === "/" ?
           <>
           <Button
             className="navbar-button"
             onClick={() => {
-              console.log("I don't do anything right now, sorry!");
+              store.displayTitle.current = 'Leaderboard'
+              navigate("/leaderboard/");
             }}
           >
             Leaderboard
@@ -35,18 +38,19 @@ const Navbar = () => {
           <Button
             className="navbar-button"
             onClick={() => {
-              navigate("/cardgallery/*");
+              store.displayTitle.current = 'All Cards';
+              navigate("/cardgallery/");
             }}
           >
             Card Gallery
           </Button>
           </>: <></>
-
         }
-        {location.pathname === "/cardgallery/*" ? (
+        {(location.pathname !== "/") ? (
           <Button
             className="navbar-button"
             onClick={() => {
+              store.displayTitle.current = ''
               navigate("/");
             }}
           >

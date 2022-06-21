@@ -1,0 +1,40 @@
+table{
+  color: #f1faee;
+  /* display: flex; */
+  /* flex-direction: column;
+  align-items: center; */
+
+  /* display: grid;
+  grid-template-columns: 1fr 1fr; */
+
+}
+table{
+  margin: auto;
+  width: 50%;
+  border: 3px solid #D2AF39;
+  padding: 10px;
+  margin-top: 100px;
+  margin-bottom: 200px;
+}
+th, td {
+  padding: 15px;
+  text-align: left;
+}
+.header {
+  background-color: #002B80;
+}
+
+tbody tr:hover {
+  background-color: #B6860A;
+  color: #00369E;
+}
+
+tbody {
+  background-color:  #00338F;
+}
+
+.scroll {
+  height: 100vh;
+  overflow-y: scroll;
+  background: repeating-radial-gradient(rgb(21, 66, 190), black);
+}

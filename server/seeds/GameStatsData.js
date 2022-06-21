@@ -10,16 +10,36 @@ export async function seed(knex) {
       level: 5,
       player_id: 1,
       player: JSON.stringify({
-        char_id: 11,
-        morale: 100,
-        attack: 2,
-        defense: 1,
+        name:"Finance",
+        base: {
+          morale:100,
+          attack:0,
+          defense:0
+        },
+        current: {
+          morale: 50,
+          attack: 0,
+          defense: 0
+        },
+        max: { morale: 100 },
+        turns: 0,
+        rank: 1
       }),
       enemy: JSON.stringify({
-        char_id: 1,
-        morale: 100,
-        attack: 1,
-        defense: 1,
+        name:"Finance",
+        base: {
+          morale:100,
+          attack:0,
+          defense:0
+        },
+        current: {
+          morale: 100,
+          attack: 0,
+          defense: 0
+        },
+        max: { morale: 100 },
+        turns: 0,
+        rank: 1
       }),
     },
   ]);

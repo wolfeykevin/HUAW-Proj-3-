@@ -76,3 +76,14 @@ Morale substitutes for Health, with various abilities subtracting and adding poi
     >docker exec -it <Whatever your Docker container ID is> bash
 
     >psql -U postgres
+
+### Bugs & Features Still Requiring Implementation:
+1)  Debuffs that should be persistent are not yet persistent across turns or games (from RESUME).
+
+2)  +Defense, +Attack, Invincible not yet implemented.
+
+3)  If window is too small, left-most card is not clickable.
+
+4)  Leaderboard not implemented.
+
+5)  Rank level requires implementation.

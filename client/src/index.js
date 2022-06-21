@@ -10,12 +10,10 @@ import NotFound from "./routes/NotFound";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <AppProvider>
-
-      <React.StrictMode>
+      <React.Fragment>
         <Router fallback={<NotFound />} exceptionElement={<NotFound />}>
           <App />
         </Router>
-      </React.StrictMode>
-
+      </React.Fragment>
   </AppProvider>
 );

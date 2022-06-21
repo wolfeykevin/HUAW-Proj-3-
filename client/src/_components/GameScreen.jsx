@@ -5,7 +5,6 @@ import { GameContext } from "../_context/GameProvider";
 import { Flex, Loader, Button } from "../_styled/StyledComponentLibrary";
 import { parseCookie, getCookie, deleteCookie } from "../_helpers/cookieHelper.js"
 import "../_styled/GameScreen.css"
-// import { Button } from "../_styled/StyledComponentLibrary";
 import Entity from "../_helpers/Entity.js"
 
 
@@ -20,10 +19,6 @@ const getCards = async (amount) => {
   return data;
 }
 
-
-
-
-
 let enemyCard = [];
 let playerCard = [];
 
@@ -31,7 +26,6 @@ const GameScreen = () => {
   const navigate = useNavigate();
   const { store } = useContext(GlobalContext);
   const { game } = useContext(GameContext);
-
 
   //TO-DO: refactor to remove these lines
   let gameData = game.gameData;
@@ -46,6 +40,9 @@ const GameScreen = () => {
 
   const debugWin = () => {
     setGameState('you win')
+  }
+  const debugLose = () => {
+    setGameState('you lose')
   }
 
   const checkMorale = () => {
@@ -62,13 +59,20 @@ const GameScreen = () => {
       let effect = effects.effect[index];
       let value = effects.value[index];
 
-      target.applyEffect(effect, value);
+
+
+      if (effect === "morale" && value < 0 && isAttack === true) {
+        let newValue = value - user.current.attack + target.current.defense;
+        console.log('is attack')
+        if (newValue < 0) {
+          target.applyEffect('morale', newValue);
+        }
+      } else {
+        console.log('not an attack')
+        target.applyEffect(effect, value);
+      }
     }
 
-    if (isAttack === true) {
-      //user attack - target defense
-      //target.applyEffect('morale', value);
-    }
   }
 
   const clickHandler = (element) => {
@@ -98,8 +102,10 @@ const GameScreen = () => {
 
     if (gameState === 'initializing') {
       gameData.player = new Entity(gameData.player);
-      gameData.enemy = new Entity(gameData.enemy);
+      gameData.enemy = new Entity(gameData.enemy, gameData.level);
+      gameData.player.updateValues()
       gameData.level += 1
+      gameData.player.applyEffect('morale', 5)
       setPlayerHand([]);
       setGameLog([]);
       enemyCard = [];
@@ -135,11 +141,11 @@ const GameScreen = () => {
       playerCard = [card]
       // apply user effects
       console.log('User Effects:')
-      applyEffects(card.user_effect, gameData.player)
+      applyEffects(card.user_effect, gameData.player, gameData.enemy)
 
       // apply enemy effects
       console.log('Enemy Effects:')
-      applyEffects(card.enemy_effect, gameData.enemy)
+      applyEffects(card.enemy_effect, gameData.enemy, gameData.player, true)
 
       await new Promise(resolve => setTimeout(resolve, 1000))
 
@@ -182,10 +188,10 @@ const GameScreen = () => {
       logMessage(`enemy used: ${enemyCard[0].name}`)
       // apply enemy card effects
       enemyCard.forEach(card => {
-        applyEffects(enemyCard[0].user_effect, gameData.enemy)
-        applyEffects(enemyCard[0].enemy_effect, gameData.player)
+        applyEffects(enemyCard[0].user_effect, gameData.enemy, gameData.player)
+        applyEffects(enemyCard[0].enemy_effect, gameData.player, gameData.enemy, true)
       })
-      await new Promise(resolve => setTimeout(resolve, 1500))
+      await new Promise(resolve => setTimeout(resolve, 3000))
       enemyCard = [];
 
       if (checkMorale() !== undefined) {
@@ -201,7 +207,15 @@ const GameScreen = () => {
     }
 
     if (gameState === 'you lose') {
-      // do nothing
+      fetch("http://localhost:8080/api/game", {
+        method: 'DELETE',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({highscore : gameData.level})
+      }).then((res) => deleteCookie('player_game_id'))
     }
 
     if (gameState === 'you win') {
@@ -225,6 +239,7 @@ const GameScreen = () => {
     }
   }
 
+
   useEffect(() => {
     if (Object.keys(store.gameData).length === 0) {
       navigate("/")
@@ -236,19 +251,34 @@ const GameScreen = () => {
     }
   }, [gameState])
 
+
+  const [consoleState, setConsoleState] = useState(false);
+
+  document.addEventListener("keyup", function(event) {
+    const debugConsole = document.getElementById('debugcontainer');
+    if (event.key === "c" && consoleState === true) {
+      debugConsole.style.display = 'none';
+    } else if (event.key === "c" && consoleState === false) {
+      debugConsole.style.display = 'block';
+    }
+    setConsoleState(!consoleState)
+  })
+
   return (
     <>
       {Object.keys(gameData).length === 0 ?
         <></>
         :
         <>
-          <div className="debug-container">
+
+          <div id="debugcontainer" className={`debug-container`}>
             <div className="debug-header">Game Data:</div>
             <div>{gameState}</div>
             {Object.keys(gameData).map(key => {
               return <div className="debug-entry">{key + ": " + JSON.stringify(gameData[key])}</div>
             })}
             <button className="debug-win" onClick={() => {debugWin()}}>JUST WIN</button>
+            <button className="debug-lose" onClick={() => {debugLose()}}>JUST LOSE</button>
           </div>
 
           {gameData.enemy.current === undefined ? <></>:
@@ -257,7 +287,6 @@ const GameScreen = () => {
               <div className="player-container">
                 <span className="entity-name">{gameData.player_name}</span>
                 <img className="entity-image" src={`/assets/AFSC/${gameData.player.name}.png`}/>
-
                   {gameData.player.current === undefined ? <></> :
                   <>
                     <div className="morale-bar">
@@ -281,13 +310,17 @@ const GameScreen = () => {
                         <img className="stat-image" src="/assets/stats/agility.png"/>
                         <span className="stat-value">{gameData.player.turns}</span>
                       </div>
+                      <div className="stat">
+                        <img className="stat-image" src="/assets/stats/rank.png"/>
+                        <span className="stat-value">{gameData.player.rank}</span>
+                      </div>
                     </div>
                   </>
                   }
 
               </div>
               <div className="enemy-container">
-              <span className="entity-name">{gameData.enemy.name + " Guy"}</span>
+                <span className="entity-name">{gameData.enemy.name + " Guy"}</span>
                 <img className="entity-image" src={`/assets/AFSC/${gameData.enemy.name}.png`}/>
                 {gameData.enemy.current === undefined ? <></> :
                 <>
@@ -310,6 +343,10 @@ const GameScreen = () => {
                       <div className="stat">
                         <img className="stat-image" src="/assets/stats/agility.png"/>
                         <span className="stat-value">{gameData.enemy.turns}</span>
+                      </div>
+                      <div className="stat">
+                        <img className="stat-image" src="/assets/stats/rank.png"/>
+                        <span className="stat-value">{gameData.enemy.rank}</span>
                       </div>
                     </div>
                 </>
@@ -341,7 +378,7 @@ const GameScreen = () => {
               }
               )}
             </div>
-            <div className="game-log">
+            <div id="debugcontainer2" className="game-log">
               {log.map(entry => <span className="log-entry">{entry}</span>)}
             </div>
           </div>
@@ -355,7 +392,7 @@ const GameScreen = () => {
           You Lost...
           <Button className="end-screen-button" onClick={() => navigate("/")}>Go Home</Button>
         </div> : <></>}
-      {(gameState === 'you win' || gameState == 'save complete') ?
+      {(gameState === 'you win' || gameState === 'save complete') ?
         <div className='end-screen'>
           You Won!
           {gameState === 'you win' ?

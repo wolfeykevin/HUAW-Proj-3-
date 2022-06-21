@@ -1,5 +1,5 @@
 const SaveData = (props) => {
-
+  console.log('Save Data:',props.gameData)
   return (
     <>
       {(props.gameData === undefined || Object.keys(props.gameData).length === 0) ? <></> :

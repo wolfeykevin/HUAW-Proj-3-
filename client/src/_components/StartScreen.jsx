@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom"
 import { GlobalContext } from "../_context/AppProvider";
 import Career from "./Career";
-import { Flex, Loader, Button } from "../_styled/StyledComponentLibrary";
+import { Flex, Loader, Button, TextInput } from "../_styled/StyledComponentLibrary";
 import "../_styled/StartScreen.css";
 import { parseCookie, getCookie, deleteCookie } from "../_helpers/cookieHelper.js"
 import SaveData from './SaveData'
@@ -43,7 +43,10 @@ const StartScreen = () => {
         if (playerName.current !== '' && playerClass.current !== '') {
           console.log(`Name: ${playerName.current} Class: ${playerClass.current}`)
           store.startGame(playerName.current,playerClass.current)
-          setTimeout(() => {window.location.reload()}, 1000)
+          // navigate("/game/*")
+          setTimeout(() => {
+            window.location.reload()
+          }, 1000)
         }
       }}>
         <div className="row">
@@ -54,21 +57,25 @@ const StartScreen = () => {
           <Career name="Spec Ops" src="/assets/AFSC/SpecOps.png" clickHandler={() => {playerClass.current = "SpecOps"; console.log(playerClass.current)}}/>
         </div>
         <div className="row">
-          <input className="name-input" onChange={(e) => {playerName.current = e.target.value}} placeholder="Name" />
+          <TextInput className="name-input" onChange={(e) => {playerName.current = e.target.value}} placeholder="Player Name" />
         </div>
         <div className="row">
-          <Button>
+          <Button type="submit">
               Start Game
           </Button>
         </div>
       </form>
       <div className="row">
         {cookies.player_game_id !== undefined ?
+          <>
           <Button className={"resume-button"} onClick={async () => {
             navigate("/game/*")
           }}>
               Resume Game
-          </Button> :
+          </Button>
+          <SaveData player_game_id={cookies.player_game_id} gameData={store.gameData} />
+          </>
+           :
           <Button className={"resume-button"} disabled>
               Resume Game
           </Button>
@@ -80,7 +87,7 @@ const StartScreen = () => {
         window.location.reload()
         }}>Delete Save</Button>
 
-      <SaveData player_game_id={cookies.player_game_id} gameData={store.gameData} />
+
     </Flex>
 
   );

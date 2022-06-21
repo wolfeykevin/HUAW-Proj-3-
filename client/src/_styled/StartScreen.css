@@ -10,6 +10,7 @@
   display: flex;
   flex-flow: column;
   align-items: center;
+  color: white;
 }
 
 .career img {
@@ -47,7 +48,7 @@
 }
 
 .image-selected {
-  outline: 2px solid black;
+  outline: 2px solid rgb(255, 0, 0);
 }
 
 .save-data-container{
@@ -56,8 +57,8 @@
   left: 0px;
   bottom: 0px;
   margin: 10px;
-  color: black;
-  border: 2px solid black;
+  color: white;
+  border: 2px solid rgb(255, 255, 255);
   border-radius: 11px;
   box-shadow: 0 0 8px 0 var(--global-box-shadow-color);
 }
@@ -66,7 +67,7 @@
   text-align: center;
   font-weight: 700;
   font-size: 1.25rem;
-  outline: 1px solid black;
+  outline: 1px solid rgb(255, 255, 255);
   border-radius: 10px 10px 0px 0px;
   padding: 10px 0px 10px 0px;
 }

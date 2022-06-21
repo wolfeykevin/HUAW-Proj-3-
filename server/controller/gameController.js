@@ -35,13 +35,12 @@ const newGame = (req, res) => {
   });
 
   const checkGamePlayerId = getPlayerId.then((data) => {
-    console.log("checkGamePlayerId initiated with:" + data.id);
     knex("game_stats")
       .select("*")
       .where({ player_id: data })
       .then((gameState) => {
         if (gameState.length > 0) {
-          console.log("old game found deleting");
+
           return knex("game_stats")
             .select("*")
             .where({ id: gameState[0].id })
@@ -61,8 +60,6 @@ const newGame = (req, res) => {
 
   Promise.all([getPlayerClass, getPlayerId]).then((newGameInstance) => {
     let playerId = newGameInstance[1];
-
-    console.log(newGameInstance)
 
     knex("game_stats")
       .insert({ // TODO: Update this format
@@ -85,54 +82,32 @@ const newGame = (req, res) => {
   });
 };
 
-/*
-
-userEffect : {
-  effect: [morale, attack, turns]
-  value: [10, 20, 1]
-}
-enemyEffect(STRING) : (JSON_STRING) {
-  effect: [increases]
-  value: [20]
-}
-*/
-
 // TODO - Refactor with New object in mind
 const continueGame = (req, res) => {
   let storedGameId = req.cookies.player_game_id;
-  // console.log("Continuing game from ID:", storedGameId)
   knex("game_stats as g")
     .select("g.*","player.name as player_name")
     .where('g.id', storedGameId)
     .join('player', 'g.player_id', 'player.id')
     .then((data) => {
-      console.log(`Data for ${storedGameId}`, data)
       res.status(200).json(data)
     });
 };
 
 // TODO - Refactor with New object in mind
 const saveGame = (req, res) => {
-  // let storedGameId = req.cookies.player_game_id;
+  let storedGameId = req.cookies.player_game_id;
   let gameData = req.body;
-  let storedGameId = gameData.id;
   delete gameData.id
   delete gameData.player_name
-  // console.log('Recieved request from game ID:', storedGameId)
-  // console.log('Data received:', gameData)
-
-
 
   knex("entities")
     .select("*")
     .orderByRaw("RANDOM ()")
     .limit(1)
     .then((data) => {
-      console.log('Next enemy:')
-      console.log(data)
       gameData.enemy = data[0];
     })
-    .then(console.log(gameData))
     .then(() =>
       knex("game_stats")
       .select("*")
@@ -147,15 +122,24 @@ const saveGame = (req, res) => {
 };
 
 const deleteGame = (req, res) => {
-  let storedGameId = req.cookies.player_game_id[0].id;
+
+  let storedGameId = parseInt(req.cookies.player_game_id);
+  let newScore = req.body.highscore;
+
+  // example req.body = {score: 5}
 
   knex("game_stats")
     .select("*")
     .where({ id: storedGameId })
+    .returning('player_id')
     .del()
     .then((data) => {
-      res.clearCookie("player_game_id");
-      res.status(200).json({ message: "game has been deleted" });
+      knex("player")
+      .select('*')
+      .where({id: data[0].player_id})
+      .update({highscore: newScore})
+      .then(() => {res.clearCookie("player_game_id");
+      res.status(200).json({ message: "game has been deleted" });})
     });
 };
 
@@ -184,30 +168,3 @@ const newBattle = (num) => {
 };
 
 export { newGame, continueGame, saveGame, deleteGame, requestNewBattle };
-
-/*
-game State
-{
-  id: 1,
-  level: 1
-  player_id : 1,
-  cara: {
-    char_id: {?}
-    morale : 100
-    attack: 2
-    defence: 1
-  },
-  enemy: {
-    id : 1,
-    morale : 100
-    attack: 1
-    defence: 1
-  }
-}
-
-current
-id | player_morale | enemy_morale | level | player_id | character_id | enemy_id
-----+---------------+--------------+-------+-----------+--------------+----------
-  1 |            50 |           30 |     5 |       111 |          222 |      333
-
-*/

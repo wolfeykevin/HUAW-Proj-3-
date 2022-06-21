@@ -2,6 +2,12 @@
   position: absolute;
   bottom: 20px;
   left: 20px;
+  color: white;
+  display: none;
+}
+
+.hideconsole {
+  display: none;
 }
 
 .debug-header{
@@ -17,9 +23,12 @@
 }
 
 .entity-container{
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-evenly;
+  min-height: 30vh;
+  max-height: 30vh;
 }
 
 .entity-image{
@@ -41,9 +50,11 @@
   font-family: var(--global-font);
   font-weight: 600;
   width: 100%;
+  max-width: 185px;
   border-radius: 5px;
   border: 2px solid black;
   box-shadow: 0 0 8px 0 var(--global-box-shadow-color);
+  color: white;
 }
 
 .player-container, .enemy-container{
@@ -56,11 +67,12 @@
 .morale-bar{
   position: relative;
   width: 100%;
+  max-width: 185px;
   height: 1rem;
   background-color: red;
   margin-top: 10px;
   border-radius: 5px;
-  border: 2px solid black;
+  border: 2px white;
   box-shadow: 0 0 8px 0 var(--global-box-shadow-color);
 }
 
@@ -88,6 +100,7 @@
   align-items: center;
   justify-content: space-evenly;
   margin-top: 10px;
+  max-width: 185px;
 }
 
 .stat{
@@ -103,7 +116,9 @@
 
 .stat-value{
   font-family: var(--global-font);
-  padding-left: 10px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: white;
 }
 
 .player-cards-container{
@@ -118,6 +133,7 @@
 }
 
 .player-card{
+  border-radius: 24px;
   position: relative;
   border: 10%;
   min-width: 192px;
@@ -172,6 +188,14 @@
   z-index: -1;
 }
 
+.entity-rank{
+  position: absolute;
+  font-family: var(--global-font);
+  font-size: var(--font-size-heading);
+  padding-left: 10px;
+  padding-top: 210px;
+}
+
 .game-log{
   position: absolute;
   display: flex;
@@ -181,13 +205,15 @@
   text-align: left;
   left: 0%;
   padding: 20px;
-  height: 70%;
+  height: 60%;
   overflow-y: scroll;
+  color: white;
 }
 
 .log-entry{
   margin-bottom: 8px;
   font-size: 12px;
+  color: white;
 }
 
 .end-screen{

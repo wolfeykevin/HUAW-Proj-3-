@@ -8,7 +8,8 @@ server.use(cookieParser());
 
 
 var corsOptions = {
-  origin: true,
+  origin: 'http://localhost:3000',
+  methods: ["GET","POST","DELETE","UPDATE", "PUT", "PATCH"],
   credentials: true,
 }
 

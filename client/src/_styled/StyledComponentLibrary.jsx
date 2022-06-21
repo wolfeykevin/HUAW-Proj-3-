@@ -46,3 +46,12 @@ export const Button = styled.button`
     transform: scale(0.99);
   }
 `;
+
+export const TextInput = styled.input`
+  font-size: var(--font-size-heading);
+  font-family: var(--global-font);
+  border-radius: 1rem;
+  border: 0;
+  box-shadow: 0 0 0 1px #000000;
+  padding: 0.5rem 1rem 0.5rem 1rem;
+`;

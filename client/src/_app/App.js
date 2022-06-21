@@ -4,6 +4,7 @@ import Loading from "../_components/Loading";
 import Home from "../routes/Home";
 import NotFound from "../routes/NotFound";
 import Navbar from "../_components/Navbar";
+import Leaderboard from "../routes/Leaderboard";
 import "../_styled/App.css";
 
 const Game = lazy(() => import("../routes/Game"));
@@ -29,6 +30,14 @@ const App = () => {
           element={
             <Suspense fallback={<Loading />}>
               <CardGallery />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/leaderboard/*"
+          element={
+            <Suspense fallback={<Loading />}>
+              <Leaderboard />
             </Suspense>
           }
         />

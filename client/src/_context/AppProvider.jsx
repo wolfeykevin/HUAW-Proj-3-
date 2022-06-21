@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext, useRef } from "react";
 import useGlobalState from "./states/useGlobalState";
 import useIsLoading from "./states/useIsLoading";
 import useGameData from "./states/useGameData";
@@ -14,6 +14,7 @@ const AppProvider = ({ children }) => {
   const { gameData, setGameData } = useGameData();
   const { startGame } = useStartGame();
   const { resumeGame } = useResumeGame();
+  const displayTitle = useRef('')
 
   const store = {
     /* GETTERS */
@@ -29,6 +30,9 @@ const AppProvider = ({ children }) => {
     /* EFFECTS */
     startGame,
     resumeGame,
+
+    /* REFS */
+    displayTitle,
   };
 
   return (

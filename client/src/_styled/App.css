@@ -16,6 +16,8 @@
   --font-size-tiny: 0.5rem;
   --color-primary: #000000;
   --color-secondary: #ffffff;
+  background: repeating-radial-gradient(rgb(39, 67, 152), black);
+  /* here is the background color place thing */
 }
 
 html {

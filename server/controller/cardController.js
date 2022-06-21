@@ -4,9 +4,6 @@ const AllCards = (req, res) => {
   knex("cards")
     .select("*")
     .then((data) => {
-      console.log(req)
-      console.log(req.cookies)
-      console.log(req.cookie)
       res.status(200).send(data);
     });
 };
