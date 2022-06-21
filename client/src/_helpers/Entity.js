@@ -44,6 +44,15 @@ class Entity {
       }
     }
 
+    // clean up low attack/defense values
+    if (this.current.attack < 0) {
+      this.current.attack = 0;
+    }
+
+    if (this.current.defense < 0) {
+      this.current.defense = 0;
+    }
+
     // clean up low or high morale values
     if (this.current.morale < 0) {
       this.current.morale = 0;

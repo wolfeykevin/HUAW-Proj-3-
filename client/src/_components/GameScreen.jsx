@@ -57,12 +57,17 @@ const GameScreen = () => {
     }
   }
 
-  const applyEffects = (effects, target) => {
+  const applyEffects = (effects, target, user, isAttack) => {
     for (let index in effects.effect) {
       let effect = effects.effect[index];
       let value = effects.value[index];
 
       target.applyEffect(effect, value);
+    }
+
+    if (isAttack === true) {
+      //user attack - target defense
+      //target.applyEffect('morale', value);
     }
   }
 
@@ -96,6 +101,7 @@ const GameScreen = () => {
       gameData.enemy = new Entity(gameData.enemy);
       gameData.level += 1
       setPlayerHand([]);
+      setGameLog([]);
       enemyCard = [];
       playerCard = [];
       gameData.player.turns += 1;
@@ -114,7 +120,7 @@ const GameScreen = () => {
 
         getCards(5-playerHand.length).then(data => setPlayerHand([...playerHand,...data]))
 
-        logMessage(['player turn', `drew ${3-playerHand.length} card(s)`])
+        logMessage(['player turn', `drew ${5-playerHand.length} card(s)`])
 
         setGameState('player turn')
       } else {
@@ -219,7 +225,6 @@ const GameScreen = () => {
     }
   }
 
-
   useEffect(() => {
     if (Object.keys(store.gameData).length === 0) {
       navigate("/")
@@ -283,7 +288,7 @@ const GameScreen = () => {
               </div>
               <div className="enemy-container">
               <span className="entity-name">{gameData.enemy.name + " Guy"}</span>
-                <img className="entity-image" src={`/assets/AFSC/${store.gameData.enemy.name}.png`}/>
+                <img className="entity-image" src={`/assets/AFSC/${gameData.enemy.name}.png`}/>
                 {gameData.enemy.current === undefined ? <></> :
                 <>
                   <div className="morale-bar">
@@ -361,7 +366,7 @@ const GameScreen = () => {
               <Button onClick={() => {
                 setGameState('loading')
                 // navigate('/')
-              }}>Fight Some More</Button>
+              }}>Stay Late</Button>
             </div>
             <div>
               <Button onClick={() => {
